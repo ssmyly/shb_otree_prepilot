@@ -16,6 +16,9 @@
   window.addEventListener('popstate', function () {
     history.pushState(null, null, location.href);
   });
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) { window.location.reload(); }
+  });
 </script>
 
 <h3>Exit Survey (2 of 2) — Experiment Feedback</h3>

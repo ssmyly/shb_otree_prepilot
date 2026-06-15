@@ -106,6 +106,9 @@
   window.addEventListener('popstate', function () {
     history.pushState(null, null, location.href);
   });
+  window.addEventListener('pageshow', function (e) {
+    if (e.persisted) { window.location.reload(); }
+  });
 </script>
 
 {{ endblock }}
