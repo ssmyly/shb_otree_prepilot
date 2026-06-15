@@ -1,0 +1,111 @@
+{{ block title }}Round {{ round_number }} — Training Decision{{ endblock }}
+
+{{ block content }}
+<style>
+  .shb-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; background: #fff; }
+  .round-badge { background: #2c3e50; color: white; padding: 0.4rem 1.2rem; border-radius: 20px; font-weight: 700; font-size: 1rem; display: inline-block; margin-bottom: 1rem; }
+  .condition-banner { padding: 0.65rem 1rem; border-radius: 5px; font-size: 0.92rem; margin-bottom: 1rem; }
+  .condition-shb   { background: #fff3cd; border-left: 4px solid #f0ad4e; color: #856404; }
+  .condition-noshb { background: #d1ecf1; border-left: 4px solid #17a2b8; color: #0c5460; }
+  .history-table th { background: #2c3e50; color: white; font-size: 0.88rem; }
+  .history-table td { font-size: 0.92rem; vertical-align: middle; }
+  .hired-yes { color: #155724; font-weight: 600; }
+  .hired-no  { color: #721c24; font-weight: 600; }
+  .token-option {
+    border: 2px solid #dee2e6; border-radius: 8px; padding: 0.9rem 1.25rem;
+    margin-bottom: 0.6rem; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 1rem; flex-wrap: wrap;
+  }
+  .token-option:hover { border-color: #3498db; background: #f0f8ff; }
+  .token-option input[type=radio] { width: 1.2rem; height: 1.2rem; }
+  .token-option .token-label { font-weight: 600; font-size: 1rem; flex: 1; min-width: 6rem; }
+  .token-option .token-cost   { font-size: 0.9rem; color: #c0392b; font-weight: 600; }
+  .token-option .token-grid   { font-size: 0.9rem; color: #2c3e50; font-weight: 600; }
+  .threshold-note { background: #fff8e1; border-left: 3px solid #ffc107; padding: 0.6rem 1rem; border-radius: 4px; font-size: 0.9rem; }
+  .bank-balance-bar { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 6px; padding: 0.65rem 1rem; margin-bottom: 1.2rem; font-size: 0.95rem; }
+  .bank-balance-bar strong { color: #1b5e20; font-size: 1.05rem; }
+  .token-option.token-disabled { opacity: 0.45; cursor: not-allowed; background: #f8f9fa; border-color: #ced4da; }
+  .token-option.token-disabled:hover { border-color: #ced4da; background: #f8f9fa; }
+  .token-unaffordable { font-size: 0.82rem; color: #6c757d; font-style: italic; margin-left: auto; }
+</style>
+
+<div class="round-badge">Work round {{ work_round }} of {{ num_work_rounds }}</div>
+
+<!-- Condition reminder -->
+{% if is_shb %}
+<div class="condition-banner condition-shb">
+  📋 <strong>Remember:</strong> your salary in the upcoming task depends only on how you do this round.
+</div>
+{% else %}
+<div class="condition-banner condition-noshb">
+  📈 <strong>Remember:</strong> the employer can see your past salaries. Your salary this round depends on how you do this round <em>and</em> on the salaries you earned before.
+</div>
+{% endif %}
+
+<!-- Salary history (No-SHB only) -->
+{% if not is_shb %}
+<div class="shb-card">
+  <h5>📊 Your past salaries <small class="text-muted">(visible to the employer)</small></h5>
+  {% if has_history %}
+  <table class="table history-table table-bordered table-sm mb-2">
+    <thead>
+      <tr>
+        <th>Round</th>
+        <th>Type</th>
+        <th>Tokens</th>
+        <th>Hired?</th>
+        <th>Salary ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in history %}
+      <tr>
+        <td>{{ row.round }}</td>
+        <td>{% if row.is_calibration %}Calibration{% else %}Work{% endif %}</td>
+        <td>{{ row.tokens }}</td>
+        <td>{% if row.hired %}<span class="hired-yes">YES</span>{% else %}<span class="hired-no">NO</span>{% endif %}</td>
+        <td>${{ row.wage_usd }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-muted">No past salaries on record yet.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<!-- Investment decision -->
+<div class="shb-card">
+  <h5>💼 How many training tokens do you want to buy this round?</h5>
+  <p style="font-size:0.92rem; color:#555;">Training shrinks the counting grid so you can answer more problems in the {{ task_duration }}-second window. Each step of compression is a little more expensive than the last.</p>
+
+  <div class="bank-balance-bar">
+    💰 <strong>Available balance: ${{ bank_balance_usd }}</strong> — you can only choose options your balance covers.
+  </div>
+
+  {% for row in token_table %}
+  <label class="token-option{% if not row.affordable %} token-disabled{% endif %}" for="token_{{ row.tokens }}">
+    <input type="radio" id="token_{{ row.tokens }}" name="training_tokens" value="{{ row.tokens }}"
+      {% if row.tokens == 0 %}checked{% endif %}
+      {% if not row.affordable %}disabled{% endif %}>
+    <span class="token-label">{{ row.tokens }} token{% if row.tokens != 1 %}s{% endif %}</span>
+    <span class="token-cost">Cost: −${{ row.cost_usd }}</span>
+    <span class="token-grid">Grid: {{ row.rows }}×{{ row.cols }} ({{ row.cells }} cells)</span>
+    {% if not row.affordable %}<span class="token-unaffordable">insufficient balance</span>{% endif %}
+  </label>
+  {% endfor %}
+
+  {{ formfield_errors 'training_tokens' }}
+
+  <div class="threshold-note mt-3">
+    ⚠️ <strong>You are hired this round if your wage offer would be at least ${{ threshold_usd }}.</strong> If you fall below that bar, your salary = $0.00 (training cost is still taken out).
+    <br><small>The employer assesses your performance with random variation of up to ±$0.40 on your wage offer.</small>
+  </div>
+</div>
+
+<div class="text-center mt-2">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

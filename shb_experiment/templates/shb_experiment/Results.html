@@ -1,0 +1,68 @@
+{{ block title }}Round {{ round_number }} — Results{{ endblock }}
+
+{{ block content }}
+<style>
+  .result-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .wage-hero { text-align: center; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; }
+  .wage-hero.hired  { background: #e8f7ee; border: 2px solid #27ae60; }
+  .wage-hero.nohire { background: #fdecea; border: 2px solid #c0392b; }
+  .wage-amount { font-size: 2.4rem; font-weight: 800; color: #2c3e50; }
+  .summary-line { background: #f8f9fa; padding: 0.85rem 1rem; border-radius: 6px; font-size: 0.95rem; }
+  table.history { font-size: 0.92rem; }
+  table.history th { background: #2c3e50; color: white; }
+</style>
+
+<h3>Work round {{ work_round }} of {{ num_work_rounds }} — Results</h3>
+
+<div class="result-card">
+  {% if hired %}
+  <div class="wage-hero hired">
+    <div style="color:#155724; font-size:1.1rem;">✅ Hired this round</div>
+    <div class="wage-amount">Salary: ${{ wage_usd }}</div>
+    <div style="color:#155724; margin-top:0.4rem;">Above the ${{ threshold_usd }} minimum — you were hired.</div>
+  </div>
+  {% else %}
+  <div class="wage-hero nohire">
+    <div style="font-size:1.5rem; font-weight:700; color:#c0392b;">❌ Not hired this round</div>
+    <div style="color:#721c24;">
+      Based on your performance, the employer's offer would have been
+      <strong>${{ wage_counterfactual_usd }}</strong> — below the ${{ threshold_usd }} minimum.
+      Salary: $0.00 (training cost is still taken out).
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="summary-line">
+    Training tokens this round: <strong>{{ training_tokens }}</strong>
+    ({{ grid_rows_used }}×{{ grid_cols_used }} grid, cost ${{ training_cost_usd }})<br>
+    Net this round: salary − training cost = ${{ wage_usd }} − ${{ training_cost_usd }} = <strong>${{ round_net_usd }}</strong>
+    {% if round_net < 0 %}<br><span style="color:#666; font-size:0.9rem;">(covered by your training allowance)</span>{% endif %}
+  </div>
+</div>
+
+{% if not is_shb and has_history %}
+<div class="result-card">
+  <h5>📊 Your past salaries</h5>
+  <p class="text-muted" style="font-size:0.9rem;">The employer can see these salaries when setting your offer in later rounds.</p>
+  <table class="table history table-bordered table-sm">
+    <thead><tr><th>Round</th><th>Type</th><th>Tokens</th><th>Hired?</th><th>Salary ($)</th></tr></thead>
+    <tbody>
+      {% for row in history %}
+      <tr>
+        <td>{{ row.round }}</td>
+        <td>{% if row.round == 1 %}Calibration{% elif row.round == round_number %}This round{% else %}Work{% endif %}</td>
+        <td>{{ row.tokens }}</td>
+        <td>{% if row.hired %}YES{% else %}NO{% endif %}</td>
+        <td>${{ row.wage_usd }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

@@ -1,0 +1,108 @@
+Exception in ASGI application
+Traceback (most recent call last):
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\uvicorn\protocols\http\h11_impl.py", line 396, in run_asgi
+    result = await app(self.scope, self.receive, self.send)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\uvicorn\middleware\proxy_headers.py", line 45, in __call__
+    return await self.app(scope, receive, send)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\applications.py", line 112, in __call__
+    await self.middleware_stack(scope, receive, send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\base.py", line 26, in __call__
+    await response(scope, receive, send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\responses.py", line 224, in __call__
+    await run_until_first_complete(
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\concurrency.py", line 24, in run_until_first_complete
+    [task.result() for task in done]
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\concurrency.py", line 24, in <listcomp>
+    [task.result() for task in done]
+     ^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\responses.py", line 216, in stream_response
+    async for chunk in self.body_iterator:
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\base.py", line 56, in body_stream
+    task.result()
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\base.py", line 38, in coro
+    await self.app(scope, receive, send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\errorpage.py", line 247, in __call__
+    raise exc  # from None
+    ^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\errorpage.py", line 227, in __call__
+    await self.app(scope, receive, _send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\base.py", line 25, in __call__
+    response = await self.dispatch_func(request, self.call_next)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\middleware.py", line 42, in dispatch
+    response = await call_next(request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\base.py", line 45, in call_next
+    task.result()
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\base.py", line 38, in coro
+    await self.app(scope, receive, send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\middleware\sessions.py", line 75, in __call__
+    await self.app(scope, receive, send_wrapper)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\patch.py", line 41, in __call__
+    raise exc  # from None
+    ^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\patch.py", line 29, in __call__
+    await self.app(scope, receive, sender)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\routing.py", line 582, in __call__
+    await route.handle(scope, receive, send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\routing.py", line 243, in handle
+    await self.app(scope, receive, send)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\views\abstract.py", line 118, in dispatch
+    response = await run_in_threadpool(self.inner_dispatch, request)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\starlette\concurrency.py", line 40, in run_in_threadpool
+    return await loop.run_in_executor(None, func, *args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\concurrent\futures\thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\views\abstract.py", line 425, in inner_dispatch
+    return self.get()
+           ^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\views\abstract.py", line 489, in get
+    response = self.render_to_response(context)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\views\abstract.py", line 195, in render_to_response
+    return render(
+           ^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\loader.py", line 85, in render
+    ibis_loader.load(template_name, template_type=template_type).render(
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\loader.py", line 50, in load
+    template, path = self.load_from_disk(filename, template_type=template_type)
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\loader.py", line 40, in load_from_disk
+    template = Template(template_string, template_id, template_type=template_type)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\template.py", line 12, in __init__
+    self.root_node = compiler.compile(
+                     ^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\compiler.py", line 18, in compile
+    ).parse()
+      ^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\compiler.py", line 166, in parse
+    stack[-1].children.append(nodes.PrintNode(token))
+                              ^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\nodes.py", line 165, in __init__
+    self.process_token(token)
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\nodes.py", line 257, in process_token
+    self.exprs = [Expression(e, token) for e in exprs]
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\nodes.py", line 257, in <listcomp>
+    self.exprs = [Expression(e, token) for e in exprs]
+                  ^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\nodes.py", line 74, in __init__
+    self._parse_filters(pipe_split[1:])
+  File "C:\Users\sarah\AppData\Local\Programs\Python\Python311\Lib\site-packages\otree\templating\nodes.py", line 117, in _parse_filters
+    raise errors.TemplateSyntaxError(msg, self.token)
+otree.templating.errors.TemplateSyntaxError: Unrecognised filter name 'add:"-1"' (line 27, in "round_number|add:"-1"")
+shb_experiment\__init__.py changed, restarting
+shb_experiment\__init__.py changed, restarting
+shb_experiment\__init__.py changed, restarting
+shb_experiment\__init__.py changed, restarting
+shb_experiment\__init__.py changed, restarting
+shb_experiment\__init__.py changed, restarting
+settings.py changed, restarting
+settings.py changed, restarting

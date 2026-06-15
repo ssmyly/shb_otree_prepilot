@@ -1,0 +1,7 @@
+# oTree-may-not-overwrite-this-file
+# Runtime dependencies for the Heroku oTree app.
+#
+# Keep analysis-only packages out of this file so Heroku builds stay small and
+# deterministic. Install those separately in a research/analysis environment.
+otree==6.0.13
+psycopg2-binary==2.9.11

@@ -1,0 +1,45 @@
+{{ block title }}Exit Survey — Part 1{{ endblock }}
+
+{{ block content }}
+<style>
+  .survey-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .survey-card h5 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+</style>
+
+<script>
+  history.pushState(null, null, location.href);
+  window.addEventListener('popstate', function () {
+    history.pushState(null, null, location.href);
+  });
+</script>
+
+<h3>Final Step — Brief Exit Survey (1 of 2)</h3>
+<p class="text-muted">Your responses help us interpret the experimental data. Most fields are optional.</p>
+
+<div class="survey-card">
+  <h5>Comprehension Check</h5>
+  {{ formfield 'comp_check_tokens' }}
+  {{ formfield 'comp_check_info' }}
+</div>
+
+<div class="survey-card">
+  <h5>Your Strategy</h5>
+  {{ formfield 'survey_token_factors' }}
+  {{ formfield 'survey_change_over_rounds' }}
+</div>
+
+<div class="survey-card">
+  <h5>Demographics (optional)</h5>
+  {{ formfield 'survey_gender' }}
+  {{ formfield 'survey_age' }}
+  {{ formfield 'survey_education' }}
+  {{ formfield 'survey_employment' }}
+  {{ formfield 'survey_income' }}
+  {{ formfield 'survey_job_search_freq' }}
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

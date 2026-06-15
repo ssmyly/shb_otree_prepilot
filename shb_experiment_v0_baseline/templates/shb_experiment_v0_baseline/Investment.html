@@ -1,0 +1,110 @@
+{{ block title }}Round {{ round_number }} — Investment Decision{{ endblock }}
+
+{{ block content }}
+<style>
+  .shb-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; background: #fff; }
+  .round-badge { background: #2c3e50; color: white; padding: 0.4rem 1.2rem; border-radius: 20px; font-weight: 700; font-size: 1rem; display: inline-block; margin-bottom: 1rem; }
+  .condition-banner { padding: 0.65rem 1rem; border-radius: 5px; font-size: 0.92rem; margin-bottom: 1rem; }
+  .condition-shb   { background: #fff3cd; border-left: 4px solid #f0ad4e; color: #856404; }
+  .condition-noshb { background: #d1ecf1; border-left: 4px solid #17a2b8; color: #0c5460; }
+  .history-table th { background: #2c3e50; color: white; font-size: 0.88rem; }
+  .history-table td { font-size: 0.92rem; vertical-align: middle; }
+  .hired-yes { color: #155724; font-weight: 600; }
+  .hired-no  { color: #721c24; font-weight: 600; }
+  .token-option {
+    border: 2px solid #dee2e6; border-radius: 8px; padding: 0.9rem 1.25rem;
+    margin-bottom: 0.6rem; cursor: pointer; transition: all 0.15s;
+    display: flex; align-items: center; gap: 1rem;
+  }
+  .token-option:hover { border-color: #3498db; background: #f0f8ff; }
+  .token-option input[type=radio] { width: 1.2rem; height: 1.2rem; }
+  .token-option .token-label { font-weight: 600; font-size: 1rem; flex: 1; }
+  .token-option .token-detail { font-size: 0.88rem; color: #555; }
+  .token-option .token-cost   { font-size: 0.9rem; color: #c0392b; font-weight: 600; }
+  .token-option .token-bonus  { font-size: 0.9rem; color: #27ae60; font-weight: 600; }
+  .formula-box { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 6px; padding: 0.85rem 1rem; font-family: monospace; font-size: 0.9rem; }
+  .threshold-note { background: #fff8e1; border-left: 3px solid #ffc107; padding: 0.6rem 1rem; border-radius: 4px; font-size: 0.9rem; }
+</style>
+
+<div class="round-badge">Round {{ round_number }} of {{ num_rounds }}</div>
+
+<!-- Condition reminder -->
+{% if is_shb %}
+<div class="condition-banner condition-shb">
+  📋 <strong>Your condition:</strong> Employer sees <strong>only this round's signal</strong> when setting your wage.
+</div>
+{% else %}
+<div class="condition-banner condition-noshb">
+  📈 <strong>Your condition:</strong> Employer sees your <strong>full salary history</strong> (all rounds so far + this round).
+</div>
+{% endif %}
+
+<!-- Salary history table (No-SHB only, from round 2 onward) -->
+{% if has_history and not is_shb %}
+<div class="shb-card">
+  <h5>📊 Your Salary History <small class="text-muted">(visible to your employer)</small></h5>
+  <table class="table history-table table-bordered table-sm mb-2">
+    <thead>
+      <tr>
+        <th>Round</th>
+        <th>Tokens bought</th>
+        <th>Signal</th>
+        <th>Hired?</th>
+        <th>Wage (ECU)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in history %}
+      <tr>
+        <td>{{ row.round }}</td>
+        <td>{{ row.tokens }}</td>
+        <td>{{ row.signal }}</td>
+        <td>{% if row.hired %}<span class="hired-yes">YES</span>{% else %}<span class="hired-no">NO</span>{% endif %}</td>
+        <td>{{ row.wage }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <div class="formula-box">
+    This round's employer will use the <strong>average of all {{ history_count_plus_1 }} signals</strong> (past + this round)<br>
+    with weight κ = <strong>{{ kappa_next }}</strong>:<br>
+    wage = {{ prior_mean }} + {{ kappa_next }} × (average signal − {{ prior_mean }})
+  </div>
+</div>
+{% elif not is_shb %}
+<div class="shb-card">
+  <h5>📊 Your Salary History</h5>
+  <p class="text-muted">No history yet — this is Round 1. Your employer will use only this round's signal (κ₁ = {{ kappa_next }}), same as the SHB condition. From Round 2 onward, your history will give you an advantage.</p>
+  <div class="formula-box">
+    wage = {{ prior_mean }} + {{ kappa_next }} × (signal − {{ prior_mean }})
+  </div>
+</div>
+{% endif %}
+
+<!-- Investment decision -->
+<div class="shb-card">
+  <h5>💼 How many training tokens do you want to purchase for Round {{ round_number }}?</h5>
+  <p style="font-size:0.92rem; color:#555;">Each token costs <strong>{{ token_cost }} ECU</strong> and adds <strong>{{ training_bonus }} points</strong> to your score (raising your signal and your chance of being hired).</p>
+
+  {% for row in token_table %}
+  <label class="token-option" for="token_{{ row.tokens }}">
+    <input type="radio" id="token_{{ row.tokens }}" name="training_tokens" value="{{ row.tokens }}" {% if row.tokens == 0 %}checked{% endif %}>
+    <span class="token-label">{{ row.tokens }} token{% if row.tokens != 1 %}s{% endif %}</span>
+    <span class="token-cost">Cost: −{{ row.cost }} ECU</span>
+    <span class="token-bonus">Score bonus: +{{ row.bonus }} pts</span>
+  </label>
+  {% endfor %}
+
+  {{ formfield_errors 'training_tokens' }}
+
+  <div class="threshold-note mt-3">
+    ⚠️ <strong>Hiring threshold = {{ threshold }} points.</strong> If your signal (score + training bonus + noise) falls below {{ threshold }}, your wage this round = 0 ECU. Training costs are still deducted.
+    <br><small>Noise is drawn uniformly between {{ noise_min }} and +{{ noise_max }} after you complete the task.</small>
+  </div>
+</div>
+
+<div class="text-center mt-2">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

@@ -1,0 +1,54 @@
+{{ block title }}Calibration Result{{ endblock }}
+
+{{ block content }}
+<style>
+  .result-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.75rem; background: #fff; margin-bottom: 1.5rem; }
+  .wage-hero { text-align: center; padding: 2rem 1rem; border-radius: 8px; }
+  .wage-hero.hired   { background: #e8f7ee; border: 2px solid #27ae60; }
+  .wage-hero.nohire  { background: #fdecea; border: 2px solid #c0392b; }
+  .wage-amount { font-size: 3rem; font-weight: 800; color: #2c3e50; line-height: 1; }
+  .wage-label  { font-size: 1.1rem; color: #555; margin-bottom: 0.5rem; }
+  .nohire-msg  { font-size: 1.6rem; font-weight: 700; color: #c0392b; }
+  .note { background: #f8f9fa; border-left: 4px solid #6c757d; padding: 0.75rem 1rem; border-radius: 4px; font-size: 0.92rem; margin-top: 1rem; }
+</style>
+
+<h3>Calibration Complete</h3>
+
+<div class="result-card">
+  <p>Based on your performance in the calibration round, the employer has computed an
+  initial salary offer:</p>
+
+  {% if hired %}
+  <div class="wage-hero hired">
+    <div class="wage-label">Starting salary offer</div>
+    <div class="wage-amount">${{ wage_offer_usd }}</div>
+    <div style="color:#155724; margin-top:0.5rem;">✅ You cleared the bar this round.</div>
+  </div>
+  {% else %}
+  <div class="wage-hero nohire">
+    <div class="wage-label">Starting assessment</div>
+    <div class="nohire-msg">Not hired this round</div>
+    <div style="color:#721c24; margin-top:0.5rem;">
+      Based on your performance, the employer's offer would have been
+      <strong>${{ wage_counterfactual_usd }}</strong> — below the ${{ threshold_usd }} minimum.
+      Your salary this round is $0.00.
+    </div>
+  </div>
+  {% endif %}
+
+  <div class="note" style="border-left-color:#3498db;">
+    Next come the two <strong>work rounds</strong>. Before each work round you can buy training
+    tokens to shrink the counting grid.
+    {% if is_shb %}
+      The employer always sets your salary from the current round's performance.
+    {% else %}
+      The employer set this starting salary from only this round's performance. However, in the future, employers will look at your salary from this round as a past salary to set your future offers.
+    {% endif %}
+  </div>
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

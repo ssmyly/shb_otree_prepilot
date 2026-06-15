@@ -1,0 +1,49 @@
+{{ block title }}Exit Survey{{ endblock }}
+
+{{ block content }}
+<style>
+  .survey-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .survey-card h5 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+</style>
+
+<h3>Final Step — Brief Exit Survey</h3>
+<p class="text-muted">Your responses help us interpret the experimental data. Most fields are optional.</p>
+
+<div class="survey-card">
+  <h5>Comprehension Check</h5>
+  {{ formfield 'comp_check_tokens' }}
+  <p class="form-text">Under your condition, what did the employer use to determine your wage?</p>
+  {{ formfield 'comp_check_info' }}
+  <p class="form-text" style="font-size:0.85rem; color:#666;">
+    (Correct answer for your condition: <em>{{ correct_info_answer }}</em>)
+  </p>
+</div>
+
+<div class="survey-card">
+  <h5>Your Strategy</h5>
+  {{ formfield 'survey_strategy' }}
+  {{ formfield 'survey_investment_trend' }}
+</div>
+
+<div class="survey-card">
+  <h5>Beliefs and Awareness</h5>
+  {{ formfield 'survey_salary_history_belief' }}
+  {{ formfield 'survey_shb_awareness' }}
+  {{ formfield 'survey_shb_support' }}
+</div>
+
+<div class="survey-card">
+  <h5>Demographics (optional)</h5>
+  {{ formfield 'survey_gender' }}
+  {{ formfield 'survey_age' }}
+  {{ formfield 'survey_education' }}
+  {{ formfield 'survey_employment' }}
+  {{ formfield 'survey_income' }}
+  {{ formfield 'survey_job_search_freq' }}
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

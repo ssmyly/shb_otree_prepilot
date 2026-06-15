@@ -1,0 +1,181 @@
+{{ block title }}Instructions{{ endblock }}
+
+{{ block content }}
+<style>
+  .shb-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; background: #fff; }
+  .shb-section-header { background: #2c3e50; color: white; padding: 0.5rem 1rem; border-radius: 4px; margin-bottom: 1rem; font-weight: 600; }
+  .condition-banner {
+    padding: 1rem 1.5rem; border-radius: 6px; font-weight: 600;
+    margin-bottom: 1.5rem; font-size: 1.05rem;
+  }
+  .condition-shb    { background: #fff3cd; border-left: 5px solid #f0ad4e; color: #856404; }
+  .condition-noshb  { background: #d1ecf1; border-left: 5px solid #17a2b8; color: #0c5460; }
+  .grid-demo {
+    display: inline-grid;
+    grid-template-columns: repeat(6, 2.2rem);
+    gap: 4px; margin: 0.75rem 0;
+  }
+  .grid-cell {
+    width: 2.2rem; height: 2.2rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #adb5bd; border-radius: 4px;
+    font-size: 1.1rem; font-weight: bold; background: #f8f9fa;
+  }
+  .grid-cell.target { background: #ffd700; border-color: #d4a000; }
+  .token-table th { background: #2c3e50; color: white; }
+  .wage-formula {
+    background: #f8f9fa; border: 1px solid #dee2e6;
+    border-radius: 6px; padding: 1rem; font-family: monospace; font-size: 1rem;
+  }
+  .step-circle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: #2c3e50; color: white; font-weight: 700;
+    margin-right: 0.5rem; flex-shrink: 0;
+  }
+  .step-row { display: flex; align-items: flex-start; margin-bottom: 0.75rem; }
+  .highlight-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 0.75rem 1rem; border-radius: 4px; }
+</style>
+
+<h3 class="mb-3">Study Instructions</h3>
+<p class="text-muted">Please read carefully. You will be asked a comprehension question at the end.</p>
+
+<!-- Condition banner -->
+{% if is_shb %}
+<div class="condition-banner condition-shb">
+  📋 Your condition: <strong>EMPLOYER CANNOT SEE YOUR SALARY HISTORY</strong><br>
+  <small>Wages are based only on your performance in the current round.</small>
+</div>
+{% else %}
+<div class="condition-banner condition-noshb">
+  📈 Your condition: <strong>EMPLOYER CAN SEE YOUR FULL SALARY HISTORY</strong><br>
+  <small>Wages are based on your performance history across all rounds.</small>
+</div>
+{% endif %}
+
+<!-- Step 1: The Task -->
+<div class="shb-card">
+  <div class="shb-section-header">Step 1: The Task — Counting Numbers in Grids</div>
+  <p>Each round you will have <strong>{{ task_duration }} seconds (2 minutes)</strong> to solve as many number-counting problems as possible.</p>
+
+  <p><strong>How it works:</strong> A target digit is shown above a 5×6 grid of numbers. Count how many times the target digit appears in the grid and type your answer.</p>
+
+  <div style="display:flex; align-items:flex-start; gap:2rem; flex-wrap:wrap; margin: 1rem 0;">
+    <div>
+      <p class="mb-1"><strong>Target digit: <span style="font-size:1.5rem; color:#d4a000;">7</span></strong></p>
+      <div class="grid-demo">
+        {% for cell in demo_cells %}
+          <div class="grid-cell {% if cell.is_target %}target{% endif %}">{{ cell.digit }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div style="padding-top:1.5rem;">
+      <p>The digit <strong>7</strong> appears <strong>5 times</strong> (highlighted in gold).</p>
+      <p>You would type: <code>5</code> and click Submit.</p>
+      <p>You get immediate feedback: ✅ Correct or ❌ Incorrect.</p>
+    </div>
+  </div>
+
+  <p><strong>Scoring:</strong></p>
+  <ul>
+    <li>Each correct answer = <strong>{{ score_multiplier }} points</strong></li>
+    <li>Problems are generated randomly each time</li>
+    <li>Answer as many as you can in {{ task_duration }} seconds</li>
+  </ul>
+</div>
+
+<!-- Step 2: Training Tokens -->
+<div class="shb-card">
+  <div class="shb-section-header">Step 2: Training Tokens — Your Investment Decision</div>
+  <p>Before each round, you may purchase <strong>training tokens</strong> to boost your score.</p>
+
+  <table class="table token-table table-bordered" style="max-width:500px;">
+    <thead>
+      <tr><th>Tokens purchased</th><th>Cost (ECU)</th><th>Score bonus (pts)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>0</td><td>0</td><td>+0</td></tr>
+      <tr><td>1</td><td>{{ token_cost }}</td><td>+{{ training_bonus }}</td></tr>
+      <tr><td>2</td><td>{{ token_cost_2 }}</td><td>+{{ token_bonus_2 }}</td></tr>
+      <tr><td>3 (max)</td><td>{{ max_token_cost }}</td><td>+{{ max_token_bonus }}</td></tr>
+    </tbody>
+  </table>
+  <p class="text-muted" style="font-size:0.88rem;">Training costs are deducted from your earnings <em>regardless</em> of whether you are hired that round.</p>
+</div>
+
+<!-- Step 3: Hiring and Wages -->
+<div class="shb-card">
+  <div class="shb-section-header">Step 3: Hiring and Wages</div>
+
+  <div class="step-row">
+    <div class="step-circle">1</div>
+    <div>Your <strong>signal</strong> = task score + training bonus + a small random noise (between {{ noise_min }} and +{{ noise_max }} points). The noise represents randomness in how employers perceive your performance.</div>
+  </div>
+  <div class="step-row">
+    <div class="step-circle">2</div>
+    <div><strong>Hiring threshold = {{ threshold }} points.</strong> If your signal ≥ {{ threshold }}, you are <strong>HIRED</strong> and receive a wage. If signal &lt; {{ threshold }}, your wage this round = 0.</div>
+  </div>
+  <div class="step-row">
+    <div class="step-circle">3</div>
+    <div>If hired, your wage is computed by a formula based on your signal(s):
+    </div>
+  </div>
+
+  <div class="wage-formula mt-2 mb-2">
+    {% if is_shb %}
+    <strong>Your wage formula (SHB condition):</strong><br>
+    wage = {{ prior_mean }} + {{ kappa_1 }} × (your signal this round − {{ prior_mean }})<br><br>
+    <em>Example:</em> If your signal = {{ example_signal }}:<br>
+    wage = {{ prior_mean }} + {{ kappa_1 }} × ({{ example_signal }} − {{ prior_mean }}) = <strong>{{ example_w_shb }} ECU</strong>
+    {% else %}
+    <strong>Your wage formula (No-SHB condition):</strong><br>
+    wage = {{ prior_mean }} + κ_n × (average of all your signals − {{ prior_mean }})<br><br>
+    where κ increases as you complete more rounds:<br>
+    &nbsp;&nbsp;Round 1: κ₁ = {{ kappa_1 }}<br>
+    &nbsp;&nbsp;Round 2: κ₂ = {{ kappa_2 }} (employer uses 2 signals → more precise)<br>
+    &nbsp;&nbsp;Round 3: κ₃ = {{ kappa_3 }} (employer uses 3 signals → most precise)<br><br>
+    <em>Example (Round 2):</em> If your Round 1 signal = 60 and Round 2 signal = {{ example_signal }}:<br>
+    Average signal = (60 + {{ example_signal }}) / 2 = 62.5<br>
+    wage = {{ prior_mean }} + {{ kappa_2 }} × (62.5 − {{ prior_mean }}) = <strong>{{ example_w_noshb_r2 }} ECU</strong>
+    {% endif %}
+  </div>
+
+  {% if not is_shb %}
+  <div class="highlight-box mt-2">
+    <strong>Key point:</strong> Because the employer uses your full salary history, a strong early-round performance increases your wages in later rounds. Your salary history is displayed to you throughout the study.
+  </div>
+  {% else %}
+  <div class="highlight-box mt-2">
+    <strong>Key point:</strong> Because the employer cannot see your salary history, each round's wage depends only on <em>this round's</em> signal. Past rounds do not affect future wages.
+  </div>
+  {% endif %}
+</div>
+
+<!-- Step 4: Earnings -->
+<div class="shb-card">
+  <div class="shb-section-header">Step 4: Earnings</div>
+  <ul>
+    <li><strong>Round net earnings</strong> = wage − training cost (floored at 0)</li>
+    <li><strong>Total bonus</strong> = sum of all round net earnings</li>
+    <li><strong>Total payment</strong> = ${{ participation_fee_usd }}.00 base + (total ECU ÷ {{ ecu_per_usd }})</li>
+  </ul>
+  <p>Example: If you earn 48 ECU net across 3 rounds: bonus = 48 ÷ {{ ecu_per_usd }} = <strong>$4.80</strong>. Plus ${{ participation_fee_usd }}.00 base = <strong>$7.80 total</strong>.</p>
+</div>
+
+<!-- Summary -->
+<div class="shb-card" style="background:#f0f8ff;">
+  <strong>Summary of the experiment flow:</strong>
+  <ol class="mt-2">
+    <li>Investment decision (choose 0–3 training tokens)</li>
+    <li>Complete counting task (2 minutes)</li>
+    <li>See your signal, hiring outcome, and wage</li>
+    <li>Repeat for {{ num_rounds }} rounds total</li>
+    <li>Answer short exit survey</li>
+  </ol>
+</div>
+
+<div class="text-center mt-3">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

@@ -1,0 +1,188 @@
+{{ block title }}Instructions{{ endblock }}
+
+{{ block content }}
+<style>
+  .shb-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.75rem; margin-bottom: 1.5rem; background: #fff; }
+  .shb-section-header { background: #2c3e50; color: white; padding: 0.5rem 1rem; border-radius: 4px; margin-bottom: 1rem; font-weight: 600; }
+  .condition-banner {
+    padding: 1rem 1.5rem; border-radius: 6px; font-weight: 600;
+    margin-bottom: 1.5rem; font-size: 1.05rem;
+  }
+  .condition-shb    { background: #fff3cd; border-left: 5px solid #f0ad4e; color: #856404; }
+  .condition-noshb  { background: #d1ecf1; border-left: 5px solid #17a2b8; color: #0c5460; }
+  .grid-demo {
+    display: inline-grid;
+    grid-template-columns: repeat(6, 2.2rem);
+    gap: 4px; margin: 0.75rem 0;
+  }
+  .grid-cell {
+    width: 2.2rem; height: 2.2rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #adb5bd; border-radius: 4px;
+    font-size: 1.1rem; font-weight: bold; background: #f8f9fa;
+  }
+  .grid-cell.target { background: #ffd700; border-color: #d4a000; }
+  .token-table th { background: #2c3e50; color: white; }
+  .example-box {
+    background: #f8f9fa; border: 1px solid #dee2e6;
+    border-radius: 6px; padding: 1rem 1.25rem; margin-bottom: 0.75rem;
+  }
+  .example-box .label { font-weight: 700; color: #2c3e50; }
+  .step-circle {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 2rem; height: 2rem; border-radius: 50%;
+    background: #2c3e50; color: white; font-weight: 700;
+    margin-right: 0.5rem; flex-shrink: 0;
+  }
+  .step-row { display: flex; align-items: flex-start; margin-bottom: 0.75rem; }
+  .highlight-box { background: #e8f4fd; border-left: 4px solid #3498db; padding: 0.75rem 1rem; border-radius: 4px; }
+  .flow-line {
+    display: flex; flex-wrap: wrap; gap: 0.5rem; align-items: center;
+    margin-top: 0.5rem; font-size: 0.95rem;
+  }
+  .flow-step {
+    background: #ecf0f1; padding: 0.4rem 0.8rem; border-radius: 4px;
+    border: 1px solid #bdc3c7; font-weight: 600;
+  }
+  .flow-arrow { color: #7f8c8d; }
+</style>
+
+<h3 class="mb-3">Study Instructions</h3>
+<p class="text-muted">Please read carefully. We will ask you a short comprehension question at the end.</p>
+
+<!-- How the Study is Structured -->
+<div class="shb-card">
+  <div class="shb-section-header">How the Study is Structured</div>
+  <p>The study has four short stages, in this order:</p>
+  <div class="flow-line">
+    <span class="flow-step">Practice (warm-up)</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">Calibration round</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">Work round 1</span>
+    <span class="flow-arrow">→</span>
+    <span class="flow-step">Work round 2</span>
+  </div>
+  <ul class="mt-3">
+    <li><strong>Practice:</strong> a short warm-up so you can get used to the counting task. It does <em>not</em> affect your pay.</li>
+    <li><strong>Calibration round:</strong> you complete the counting task once. The employer uses your performance here to set a starting salary offer (which does contribute to your pay). You do face the possibility of being rejected, getting 0 salary this period, if your performance is too low or your employer evaluates you unfavorably. The bar to clear here is lower than in the work rounds, however, since this round is just to figure out where you start.</li>
+    <li><strong>Work rounds (2 total):</strong> in each one, you first decide how much to invest in training, then complete the counting task, then see your salary offer (always facing the possibility of rejection). Both work rounds count toward your bonus.</li>
+  </ul>
+</div>
+
+<!-- The Counting Task -->
+<div class="shb-card">
+  <div class="shb-section-header">The Counting Task</div>
+  <p>You will see a target digit and a grid of numbers. Count how many times the target digit appears, type the number, and click Submit (or press the Enter key). You get instant feedback (✅ or ❌) and a new problem appears. You answer as many problems as you can in the time allowed.</p>
+
+  <div style="display:flex; align-items:flex-start; gap:2rem; flex-wrap:wrap; margin: 1rem 0;">
+    <div>
+      <p class="mb-1"><strong>Target digit: <span style="font-size:1.5rem; color:#d4a000;">7</span></strong></p>
+      <div class="grid-demo">
+        {% for cell in demo_cells %}
+          <div class="grid-cell {% if cell.is_target %}target{% endif %}">{{ cell.digit }}</div>
+        {% endfor %}
+      </div>
+    </div>
+    <div style="padding-top:1.5rem;">
+      <p>The digit <strong>7</strong> appears <strong>4 times</strong> (highlighted in gold).</p>
+      <p>You would type <code>4</code> and click Submit (press the Enter key).</p>
+    </div>
+  </div>
+
+  <p>The more problems you solve correctly, the higher your potential wage offer. Every round (calibration and the two work rounds) gives you <strong>{{ task_duration }} seconds</strong> to answer.</p>
+</div>
+
+<!-- Investment -->
+<div class="shb-card">
+  <div class="shb-section-header">Investing in Training (Work Rounds Only)</div>
+  <p>Before each work round, you may pay for training. Training does <strong>not</strong> directly boost your wage offer. Instead, it makes the task easier by <strong>shrinking the counting grid</strong>, so you can answer more problems in the same amount of time — which raises your performance and therefore your potential offer.</p>
+
+  <table class="table token-table table-bordered" style="max-width:600px;">
+    <thead>
+      <tr><th>Training tokens</th><th>Cost ($)</th><th>Grid you face</th><th>Cells</th></tr>
+    </thead>
+    <tbody>
+      {% for row in token_menu %}
+      <tr>
+        <td>{{ row.tokens }}</td>
+        <td>${{ row.cost_usd }}</td>
+        <td>{{ row.rows }}×{{ row.cols }}</td>
+        <td>{{ row.cells }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <p class="text-muted" style="font-size:0.9rem;">Each step of grid compression is a little more expensive than the last. The cost is taken out of your earnings for that round whether or not you are hired.</p>
+</div>
+
+<!-- Hiring and Wages -->
+<div class="shb-card">
+  <div class="shb-section-header">How Salaries are Set</div>
+
+  <div class="step-row">
+    <div class="step-circle">1</div>
+    <div>After the task, the employer assesses your performance with a small amount of random variation added (up to ±${{ noise_wage_range_usd }} on your wage offer). This represents the fact that employers can't observe your true productivity perfectly.</div>
+  </div>
+  <div class="step-row">
+    <div class="step-circle">2</div>
+    <div>If your resulting wage offer would be at least <strong>${{ threshold_baseline_usd }}</strong> in the calibration round (or at least <strong>${{ threshold_work_usd }}</strong> in each work round), you are <strong>hired</strong> and receive that offer. Otherwise your salary that round is $0.00 (training cost is still taken out).</div>
+  </div>
+  <div class="step-row">
+    <div class="step-circle">3</div>
+    <div>
+      {% if is_shb %}
+      Your wage offer depends <strong>only on this round's performance</strong>.
+      {% else %}
+      Your wage offer depends on <strong>this round's performance and the salaries you received in earlier rounds</strong>. A higher past salary gives you a higher offer this round.
+      {% endif %}
+    </div>
+  </div>
+
+  <h5 class="mt-3">Worked Example</h5>
+
+  {% if is_shb %}
+  <div class="example-box">
+    <span class="label">Example.</span> Suppose your performance this round results in a wage offer of <strong>${{ example_w_shb_usd }}</strong> (above the average of ${{ prior_mean_usd }}). That is your salary this round — above the ${{ threshold_work_usd }} bar, so you are hired.
+  </div>
+  {% else %}
+  <div class="example-box">
+    <span class="label">Example 1 — favorable past salary.</span> Suppose your performance this round would generate an offer of <strong>${{ example_w_shb_usd }}</strong> and your calibration salary was <strong>${{ example_w0_usd }}</strong> (above the ${{ prior_mean_usd }} average). The employer adds a bonus for the favorable history: your final offer is <strong>${{ example_w_noshb_t1_usd }}</strong>.
+  </div>
+  <div class="example-box">
+    <span class="label">Example 2 — unfavorable past salary.</span> Now suppose your past salary was <strong>below</strong> the ${{ prior_mean_usd }} average instead. The same current performance results in a lower final offer because the history penalty works against you.
+  </div>
+  <div class="highlight-box mt-2">
+    <strong>Key point:</strong> Doing well early gives you a head-start that follows you forward. A below-average early salary drags later offers down. Your salary history is shown to you before each round.
+  </div>
+  {% endif %}
+</div>
+
+<!-- Earnings -->
+<div class="shb-card">
+  <div class="shb-section-header">How You Get Paid</div>
+  <ul>
+    <li>You start with a <strong>${{ token_endowment_usd }} training allowance</strong>. Training tokens are paid for out of this allowance plus any salary you have earned — whatever you don't spend is yours to keep.</li>
+    <li>Each round's <strong>net earnings</strong> = salary − training cost.</li>
+    <li>Your <strong>final total</strong> = ${{ token_endowment_usd }} allowance + your net salary earnings.</li>
+    <li>All earnings are shown directly in dollars throughout the study.</li>
+  </ul>
+</div>
+
+<!-- Summary -->
+<div class="shb-card" style="background:#f0f8ff;">
+  <strong>Quick recap of the flow:</strong>
+  <ol class="mt-2">
+    <li>Practice round (warm-up, no pay).</li>
+    <li>Calibration round (counting task → starting salary offer).</li>
+    <li>Work round 1: pick training tokens → counting task → see your salary.</li>
+    <li>Work round 2: same as work round 1.</li>
+    <li>Final summary and a short exit survey.</li>
+  </ol>
+</div>
+
+<div class="text-center mt-3">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

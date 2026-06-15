@@ -1,0 +1,65 @@
+{{ block title }}Round {{ round_number }} — Results{{ endblock }}
+
+{{ block content }}
+<style>
+  .result-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .wage-hero { text-align: center; padding: 1.5rem; border-radius: 8px; margin-bottom: 1rem; }
+  .wage-hero.hired  { background: #e8f7ee; border: 2px solid #27ae60; }
+  .wage-hero.nohire { background: #fdecea; border: 2px solid #c0392b; }
+  .wage-amount { font-size: 2.4rem; font-weight: 800; color: #2c3e50; }
+  .breakdown { background: #f8f9fa; padding: 1rem; border-radius: 6px; font-family: monospace; }
+  table.history { font-size: 0.92rem; }
+  table.history th { background: #2c3e50; color: white; }
+</style>
+
+<h3>Round {{ round_number }} Results</h3>
+
+<div class="result-card">
+  {% if hired %}
+  <div class="wage-hero hired">
+    <div style="color:#155724; font-size:1.1rem;">✅ Hired</div>
+    <div class="wage-amount">Wage: {{ wage }} ECU</div>
+  </div>
+  {% else %}
+  <div class="wage-hero nohire">
+    <div class="nohire-msg" style="font-size:1.5rem; font-weight:700; color:#c0392b;">❌ Not hired this round</div>
+    <div style="color:#721c24;">Wage: 0 ECU (training cost still deducted)</div>
+  </div>
+  {% endif %}
+
+  <div class="breakdown">
+    Task score:        {{ task_score }} pts ({{ num_correct }} correct × {{ score_multiplier }})<br>
+    Training bonus:   +{{ training_bonus }} pts ({{ training_tokens }} tokens)<br>
+    Random noise:     {% if noise_drawn >= 0 %}+{% endif %}{{ noise_drawn }} pts<br>
+    <strong>Signal sent to employer: {{ signal }} pts</strong> (threshold = {{ threshold }})<br><br>
+    {% if hired %}
+    Wage formula uses κ = {{ kappa_used }}, mean signal = {{ mean_signal_used }}<br>
+    Wage = {{ prior_mean }} + {{ kappa_used }} × ({{ mean_signal_used }} − {{ prior_mean }}) = <strong>{{ wage }}</strong> ECU<br>
+    {% endif %}
+    Net this round = wage − training cost = {{ wage }} − {{ training_cost }} = <strong>{{ net_floored }} ECU</strong>
+  </div>
+</div>
+
+{% if has_history %}
+<div class="result-card">
+  <h5>Your performance so far</h5>
+  <table class="table history table-bordered table-sm">
+    <thead><tr><th>Round</th><th>Tokens</th><th>Signal</th><th>Hired?</th><th>Wage</th></tr></thead>
+    <tbody>
+      {% for row in history %}
+      <tr>
+        <td>{{ row.round }}</td><td>{{ row.tokens }}</td><td>{{ row.signal }}</td>
+        <td>{% if row.hired %}YES{% else %}NO{% endif %}</td>
+        <td>{{ row.wage }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

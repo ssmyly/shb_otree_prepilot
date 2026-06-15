@@ -1,0 +1,60 @@
+{{ block title }}Exit Survey — Part 2{{ endblock }}
+
+{{ block content }}
+<style>
+  .survey-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .survey-card h5 { color: #2c3e50; border-bottom: 2px solid #ecf0f1; padding-bottom: 0.5rem; margin-bottom: 1rem; }
+  .debrief-card {
+    border: 1px solid #b8d4e8; border-radius: 8px;
+    padding: 1.5rem; background: #eaf4fb; margin-bottom: 1.5rem;
+  }
+  .debrief-card h5 { color: #1a5276; margin-bottom: 0.75rem; }
+</style>
+
+<script>
+  history.pushState(null, null, location.href);
+  window.addEventListener('popstate', function () {
+    history.pushState(null, null, location.href);
+  });
+</script>
+
+<h3>Exit Survey (2 of 2) — Experiment Feedback</h3>
+
+<div class="debrief-card">
+  <h5>Debriefing Statement</h5>
+  <p>
+    Thank you for participating. This study examines how the availability of salary history information
+    affects workers' decisions to invest in human capital (i.e., training). In some sessions, employers
+    could see a worker's full salary history when making a wage offer ("no ban" condition); in others,
+    that information was hidden ("salary history ban" condition). We are interested in whether salary
+    history bans change the incentive to invest in productivity-enhancing training.
+  </p>
+  <p>
+    The information you provided will be used solely for academic research and will be kept
+    confidential. Results will be reported only in aggregate form.
+  </p>
+  <p class="mb-0">
+    If you have questions about the study, please contact the research team. We appreciate your time
+    and participation.
+  </p>
+</div>
+
+<div class="survey-card">
+  <h5>Experiment Feedback (optional)</h5>
+  {{ formfield 'survey_experiment_thoughts' }}
+  {{ formfield 'survey_wording_strength' }}
+  {{ formfield 'survey_wording_explain' }}
+  {{ formfield 'survey_user_friendly' }}
+  {{ formfield 'survey_problems' }}
+</div>
+
+<div class="survey-card">
+  <h5>Optional Contact</h5>
+  {{ formfield 'survey_name' }}
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

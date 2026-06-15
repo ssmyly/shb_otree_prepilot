@@ -1,0 +1,65 @@
+{{ block title }}Final Results{{ endblock }}
+
+{{ block content }}
+<style>
+  .summary-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .pay-hero { text-align: center; padding: 1.5rem; background: #e8f7ee; border: 2px solid #27ae60; border-radius: 8px; }
+  .pay-amount { font-size: 2.6rem; font-weight: 800; color: #2c3e50; }
+  table.history th { background: #2c3e50; color: white; font-size: 0.88rem; }
+  table.history td { font-size: 0.92rem; }
+  .calib-row td { background: #f6f0fa; }
+</style>
+
+<h3>Study Complete — Your Results</h3>
+
+<div class="summary-card">
+  <div class="pay-hero">
+    <div style="color:#155724; font-size:1.1rem;">Total payment</div>
+    <div class="pay-amount">${{ total_usd }}</div>
+  </div>
+</div>
+
+<div class="summary-card">
+  <h5>Round-by-round breakdown</h5>
+  <table class="table history table-bordered table-sm">
+    <thead>
+      <tr>
+        <th>Round</th>
+        <th>Type</th>
+        <th>Grid faced</th>
+        <th>Tokens</th>
+        <th>Cost ($)</th>
+        <th>Hired?</th>
+        <th>Salary ($)</th>
+        <th>Net ($)</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for r in history %}
+      <tr {% if r.is_calibration %}class="calib-row"{% endif %}>
+        <td>{{ r.round }}</td>
+        <td>{% if r.is_calibration %}Calibration{% else %}Work{% endif %}</td>
+        <td>{{ r.grid }}</td>
+        <td>{{ r.tokens }}</td>
+        <td>${{ r.cost_usd }}</td>
+        <td>{% if r.hired %}YES{% else %}NO{% endif %}</td>
+        <td>${{ r.wage_usd }}</td>
+        <td>${{ r.net_usd }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <p style="margin-top:1rem;">
+    <strong>Totals:</strong> {{ total_correct }} problems correct &middot;
+    {{ total_tokens }} training tokens purchased &middot;
+    Hired in {{ times_hired }} of {{ num_rounds }} rounds &middot;
+    Total bonus: ${{ bonus_usd }}
+  </p>
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

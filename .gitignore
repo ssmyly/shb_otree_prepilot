@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+*$py.class
+
+.venv/
+venv/
+env/
+
+db.sqlite3
+*.sqlite3
+
+.env
+.DS_Store
+otree-test.sqlite3
+*.otreezip

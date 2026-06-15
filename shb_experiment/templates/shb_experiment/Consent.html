@@ -1,0 +1,104 @@
+{{ block title }}Welcome to the Study{{ endblock }}
+
+{{ block content }}
+<style>
+  .shb-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    background: #fff;
+  }
+  .shb-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .shb-header h2 { color: white; margin-bottom: 0.25rem; }
+  .shb-header p  { color: #d0e8f7; margin-bottom: 0; }
+  .pay-box {
+    background: #e8f5e9;
+    border-left: 4px solid #2e7d32;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+  .consent-text {
+    font-size: 0.92rem;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f9f9f9;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .btn-start {
+    background: #2c3e50;
+    color: white;
+    font-size: 1.1rem;
+    padding: 0.75rem 2.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-start:hover { background: #3498db; }
+</style>
+
+<div class="shb-header">
+  <h2>A Research Study of Worker Behavior</h2>
+  <p>Conducted by researchers at Emory University</p>
+</div>
+
+<div class="shb-card">
+  <h4>What You Will Do</h4>
+  <ul>
+    <li>You will be playing the role of a worker</li>
+    <li>Read the instructions and complete a short <strong>practice round</strong> (warm-up, no pay)</li>
+    <li>Complete a <strong>calibration round</strong> followed by <strong>2 work rounds</strong> of a short performance task</li>
+    <li>Before each work round, decide how much to invest in <strong>training</strong>, considering how your employer assesses you and your performance</li>
+    <li>Earn money based on your performance and investment decisions</li>
+    <li>Answer a brief exit survey (~5 minutes)</li>
+  </ul>
+  <p><strong>Estimated total time:</strong> 15–25 minutes</p>
+</div>
+
+<div class="shb-card">
+  <h4>Payment</h4>
+  <div class="pay-box">
+    <strong>Training allowance:</strong> ${{ token_endowment_usd }} to spend on training — anything you don't spend is yours to keep<br>
+    <strong>Performance bonus:</strong> earned directly in dollars based on your salary offers and training costs
+  </div>
+  <p class="text-muted" style="font-size:0.88rem;">
+    All earnings are shown directly in dollars throughout the study.
+    All bonuses are paid through Prolific within 24 hours of completion.
+  </p>
+</div>
+
+<div class="shb-card">
+  <h4>Informed Consent</h4>
+  <div class="consent-text">
+    <p><strong>Study Purpose:</strong> This study examines worker behavior in the labor market.</p>
+    <p><strong>Procedures:</strong> You will complete a real-effort task (counting numbers in grids) — one calibration round followed by two work rounds — and make training-investment decisions before each work round. Your earnings depend on your performance and choices.</p>
+    <p><strong>No deception:</strong> This study does not use deception.</p>
+    <p><strong>Voluntary participation:</strong> Your participation is entirely voluntary. You may exit at any time and will be paid for the rounds you completed.</p>
+    <p><strong>Data privacy:</strong> Your data will be stored securely and anonymized before analysis. Only your Prolific ID is collected; no other personally identifying information is retained.</p>
+    <p><strong>Risks:</strong> There are no known risks beyond those of normal computer use.</p>
+    <p><strong>Contact:</strong> If you have questions about this study, please contact the research team through Prolific.</p>
+  </div>
+  <p class="mt-3">By clicking the button below, you confirm that you:</p>
+  <ul>
+    <li>Are at least 18 years old</li>
+    <li>Have read and understood the information above</li>
+    <li>Consent to participate in this study</li>
+  </ul>
+</div>
+
+<div class="text-center mt-3">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

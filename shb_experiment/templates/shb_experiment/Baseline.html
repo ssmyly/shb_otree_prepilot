@@ -1,0 +1,174 @@
+{{ block title }}Calibration Round{{ endblock }}
+
+{{ block content }}
+<style>
+  .task-card { border: 1px solid #dee2e6; border-radius: 8px; padding: 1.5rem; background: #fff; margin-bottom: 1rem; }
+  .calib-banner {
+    background: #e8f4fd; border-left: 4px solid #3498db;
+    padding: 0.85rem 1.25rem; border-radius: 4px; margin-bottom: 1rem; font-size: 0.95rem;
+  }
+  .timer-bar { background: #2c3e50; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 700; font-size: 1.1rem; display: inline-block; }
+  .timer-bar.warn { background: #c0392b; }
+  .score-bar  { background: #27ae60; color: white; padding: 0.6rem 1.2rem; border-radius: 6px; font-weight: 700; font-size: 1.1rem; display: inline-block; margin-left: 0.5rem; }
+  .target-box { background: #fff8e1; border: 2px solid #f0ad4e; border-radius: 8px; padding: 1rem 1.5rem; display: inline-block; margin: 1rem 0; }
+  .target-digit { font-size: 2.6rem; font-weight: 800; color: #d4a000; line-height: 1; }
+  .grid { display: inline-grid; gap: 6px; margin: 1rem 0; }
+  .task-cell {
+    width: 2.6rem; height: 2.6rem;
+    display: flex; align-items: center; justify-content: center;
+    border: 1px solid #adb5bd; border-radius: 4px;
+    font-size: 1.3rem; font-weight: bold; background: #f8f9fa;
+    user-select: none;
+  }
+  .answer-row { margin-top: 1rem; }
+  .answer-row input[type=number] {
+    font-size: 1.3rem; padding: 0.4rem 0.6rem; width: 6rem;
+    border: 2px solid #3498db; border-radius: 4px; text-align: center;
+  }
+  .answer-row button {
+    font-size: 1rem; padding: 0.5rem 1.2rem; margin-left: 0.5rem;
+    background: #3498db; color: white; border: none; border-radius: 4px;
+    cursor: pointer; font-weight: 600;
+  }
+  .answer-row button:hover { background: #2980b9; }
+  #feedback { font-size: 1.05rem; font-weight: 600; margin-top: 0.6rem; min-height: 1.5rem; }
+</style>
+
+<div class="task-card">
+  <div>
+    <span class="timer-bar">⏱ Time: <span id="timer">{{ task_duration }}</span>s</span>
+    <span class="score-bar">✓ Correct: <span id="score-counter">0</span></span>
+  </div>
+
+  <div class="text-center">
+    <div class="target-box">
+      Target digit: <span class="target-digit" id="target-digit">?</span>
+    </div>
+
+    <div>
+      <div class="grid" id="grid"></div>
+    </div>
+
+    <div class="answer-row">
+      <label for="answer-input"><strong>How many times does the target digit appear?</strong></label><br>
+      <input type="number" id="answer-input" min="0" max="99" autocomplete="off">
+      <button type="button" id="submit-btn">Submit</button>
+    </div>
+
+    <div id="feedback"></div>
+
+    <p style="font-size:0.9rem; color:#555; margin-top:0.5rem;">
+      Press <kbd>Enter</kbd> to submit. Grid sizes vary from problem to problem.
+    </p>
+  </div>
+</div>
+
+<input type="hidden" name="baseline_num_correct" id="id_baseline_num_correct" value="0">
+<input type="hidden" name="baseline_data_json" id="id_baseline_data_json" value="[]">
+
+<div style="display:none;">{{ next_button }}</div>
+
+<script>
+(function () {
+  // Prevent back / forward navigation on timed pages.
+  history.pushState(null, null, location.href);
+  window.addEventListener('popstate', function () {
+    history.pushState(null, null, location.href);
+  });
+
+  const GRID_SIZES = {{ grid_sizes_json|safe }};
+
+  let numCorrect = 0;
+  let problemHistory = [];
+  let timeRemaining = {{ server_remaining }};
+  let currentTarget = null;
+  let currentGrid = null;
+  let currentTrueCount = null;
+  let currentRows = null, currentCols = null;
+  let problemStartTime = null;
+
+  function genGrid(rows, cols) {
+    const cells = [];
+    for (let i = 0; i < rows * cols; i++) cells.push(Math.floor(Math.random() * 10));
+    return cells;
+  }
+
+  function newProblem() {
+    const size = GRID_SIZES[Math.floor(Math.random() * GRID_SIZES.length)];
+    currentRows = size[0]; currentCols = size[1];
+    currentGrid = genGrid(currentRows, currentCols);
+    currentTarget = Math.floor(Math.random() * 10);
+    currentTrueCount = currentGrid.filter(d => d === currentTarget).length;
+    problemStartTime = Date.now();
+    document.getElementById('target-digit').textContent = currentTarget;
+    const gridDiv = document.getElementById('grid');
+    gridDiv.style.gridTemplateColumns = 'repeat(' + currentCols + ', 2.6rem)';
+    gridDiv.innerHTML = '';
+    currentGrid.forEach(d => {
+      const cell = document.createElement('div');
+      cell.className = 'task-cell';
+      cell.textContent = d;
+      gridDiv.appendChild(cell);
+    });
+    document.getElementById('answer-input').value = '';
+    document.getElementById('answer-input').focus();
+    document.getElementById('feedback').innerHTML = '';
+  }
+
+  function submitAnswer() {
+    const raw = document.getElementById('answer-input').value;
+    if (raw === '') return;
+    const ans = parseInt(raw, 10);
+    if (isNaN(ans)) return;
+
+    const correct = (ans === currentTrueCount);
+    const fb = document.getElementById('feedback');
+    if (correct) {
+      numCorrect++;
+      fb.innerHTML = '<span style="color:#155724;">✅ Correct!</span>';
+      document.getElementById('score-counter').textContent = numCorrect;
+    } else {
+      fb.innerHTML = '<span style="color:#721c24;">❌ Not quite — correct answer was ' + currentTrueCount + '</span>';
+    }
+    problemHistory.push({
+      rows: currentRows, cols: currentCols,
+      target: currentTarget,
+      true_count: currentTrueCount,
+      answered: ans,
+      correct: correct,
+      rt_ms: Date.now() - problemStartTime,
+    });
+    // Keep the hidden form fields in sync after every answer so the latest
+    // count is recorded regardless of how the form is submitted.
+    document.getElementById('id_baseline_num_correct').value = numCorrect;
+    document.getElementById('id_baseline_data_json').value = JSON.stringify(problemHistory);
+    setTimeout(newProblem, 700);
+  }
+
+  function tick() {
+    timeRemaining--;
+    document.getElementById('timer').textContent = timeRemaining;
+    if (timeRemaining <= 10) {
+      document.querySelector('.timer-bar').classList.add('warn');
+    }
+    if (timeRemaining > 0) {
+      setTimeout(tick, 1000);
+    }
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('timer').textContent = timeRemaining;
+    if (timeRemaining <= 10) {
+      document.querySelector('.timer-bar').classList.add('warn');
+    }
+    document.getElementById('submit-btn').addEventListener('click', submitAnswer);
+    document.getElementById('answer-input').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') { e.preventDefault(); submitAnswer(); }
+    });
+    newProblem();
+    if (timeRemaining > 0) { setTimeout(tick, 1000); }
+  });
+})();
+</script>
+
+{{ endblock }}

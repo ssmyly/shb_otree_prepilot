@@ -1,0 +1,56 @@
+{{ block title }}Ready for Work Round {{ work_round }}{{ endblock }}
+
+{{ block content }}
+<style>
+  .ready-card {
+    border: 1px solid #dee2e6; border-radius: 8px;
+    padding: 2rem; background: #fff; margin-bottom: 1.5rem;
+  }
+  .ready-banner {
+    background: #e8f7ee; border-left: 5px solid #27ae60;
+    padding: 1rem 1.5rem; border-radius: 6px; margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+  }
+  .summary-line { font-size: 1rem; margin-bottom: 0.55rem; }
+  .summary-line strong { color: #2c3e50; }
+  .next-up {
+    background: #fff3cd; border-left: 4px solid #ffc107;
+    padding: 1rem 1.25rem; border-radius: 4px; margin-top: 1rem;
+    font-size: 1rem;
+  }
+</style>
+
+<div class="ready-banner">
+  ✅ <strong>Training decision recorded.</strong> Get ready for Work Round {{ work_round }} of {{ num_work_rounds }}.
+</div>
+
+<div class="ready-card">
+  <h4>Round summary</h4>
+  <div class="summary-line">
+    <strong>Training tokens purchased:</strong> {{ training_tokens }}
+    {% if training_cost > 0 %}
+      &nbsp;<span style="color:#c0392b;">(cost: −${{ training_cost_usd }})</span>
+    {% else %}
+      &nbsp;<span style="color:#27ae60;">(no cost)</span>
+    {% endif %}
+  </div>
+  <div class="summary-line">
+    <strong>Grid you will face:</strong> {{ grid_rows }}×{{ grid_cols }} ({{ grid_cells }} cells)
+  </div>
+  <div class="summary-line">
+    <strong>Time on the clock:</strong> {{ task_duration }} seconds
+  </div>
+  <div class="summary-line">
+    <strong>Minimum offer to be hired:</strong> ${{ threshold_usd }}
+  </div>
+
+  <div class="next-up">
+    ⏱ <strong>Heads up:</strong> when you click the button below, the {{ task_duration }}-second timer starts <em>immediately</em>. Make sure you are ready before clicking.
+  </div>
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

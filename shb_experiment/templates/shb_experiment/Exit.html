@@ -1,0 +1,68 @@
+{{ block title }}Thank You{{ endblock }}
+
+{{ block content }}
+<style>
+  .exit-hero {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white; padding: 2.5rem 2rem; border-radius: 8px;
+    margin-bottom: 1.5rem; text-align: center;
+  }
+  .exit-hero h2 { color: white; margin-bottom: 0.5rem; }
+  .exit-hero p  { color: #d0e8f7; margin-bottom: 0; }
+  .pay-card {
+    border: 1px solid #dee2e6; border-radius: 8px;
+    padding: 1.5rem; background: #e8f7ee; margin-bottom: 1.5rem;
+    text-align: center;
+  }
+  .pay-amount { font-size: 2.4rem; font-weight: 800; color: #155724; }
+  .info-card {
+    border: 1px solid #dee2e6; border-radius: 8px;
+    padding: 1.5rem; background: #fff; margin-bottom: 1rem;
+  }
+  .completion-btn {
+    display: inline-block;
+    background: #27ae60; color: white;
+    font-size: 1.15rem; font-weight: 600;
+    padding: 0.85rem 2.5rem; border-radius: 6px;
+    text-decoration: none; margin-top: 0.5rem;
+  }
+  .completion-btn:hover { background: #1e8449; color: white; text-decoration: none; }
+  .code-box {
+    background: #f8f9fa; border: 1px dashed #adb5bd;
+    padding: 0.75rem 1rem; border-radius: 4px;
+    font-family: monospace; font-size: 1rem; display: inline-block;
+  }
+</style>
+
+<div class="exit-hero">
+  <h2>🎉 Thank You for Participating</h2>
+  <p>Your responses have been recorded. The study is now complete.</p>
+</div>
+
+<div class="pay-card">
+  <div style="font-size:1.05rem; color:#155724;">Your total payment</div>
+  <div class="pay-amount">${{ total_usd }}</div>
+</div>
+
+<div class="info-card">
+  <h4>What happens next</h4>
+  <ul>
+    <li>Your bonus will be paid through Prolific within <strong>24 hours</strong> of completion.</li>
+    <li>If you have questions about the study or your payment, please contact the research team through Prolific.</li>
+  </ul>
+</div>
+
+{% if has_completion_url %}
+<div class="info-card text-center">
+  <h4>Return to Prolific</h4>
+  <p>Click the button below to mark your submission complete on Prolific.</p>
+  <a href="{{ completion_url }}" class="completion-btn">Return to Prolific →</a>
+</div>
+{% else %}
+<div class="info-card text-center">
+  <h4>You may now close this browser tab</h4>
+  <p>Your responses are saved. If you came here from Prolific, return to that tab to mark your submission complete.</p>
+</div>
+{% endif %}
+
+{{ endblock }}

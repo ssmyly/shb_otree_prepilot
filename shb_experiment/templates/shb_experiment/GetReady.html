@@ -1,0 +1,44 @@
+{{ block title }}Get Ready{{ endblock }}
+
+{{ block content }}
+<style>
+  .ready-card {
+    border: 1px solid #dee2e6; border-radius: 8px;
+    padding: 2rem; background: #fff; margin-bottom: 1.5rem;
+  }
+  .ready-banner {
+    background: #e8f7ee; border-left: 5px solid #27ae60;
+    padding: 1rem 1.5rem; border-radius: 6px; margin-bottom: 1.5rem;
+    font-size: 1.05rem;
+  }
+  .next-up {
+    background: #e8f4fd; border-left: 4px solid #3498db;
+    padding: 1rem 1.25rem; border-radius: 4px; margin-top: 1rem;
+  }
+</style>
+
+<div class="ready-banner">
+  ✅ <strong>Practice round complete.</strong> Take a breath — the next round is the
+  <strong>calibration round</strong>, and it counts toward your bonus.
+</div>
+
+<div class="ready-card">
+  <h4>What happens in the calibration round</h4>
+  <ul>
+    <li>You will get <strong>{{ baseline_duration }} seconds</strong> on the same counting task.</li>
+    <li>The grids will vary in size from problem to problem.</li>
+    <li>The employer will use your performance to set a <strong>starting salary offer</strong>.</li>
+    <li>You are hired if your wage offer would be at least <strong>${{ threshold_baseline_usd }}</strong> — a lower bar than in the work rounds, since this round is just to figure out where you start.</li>
+    <li>You will see only the salary offer afterwards — not your raw score.</li>
+  </ul>
+
+  <div class="next-up">
+    📌 <strong>What to do now:</strong> when you click the button below, the calibration round will start right away with a {{ baseline_duration }}-second timer. Make sure you are ready before clicking.
+  </div>
+</div>
+
+<div class="text-center">
+  {{ next_button }}
+</div>
+
+{{ endblock }}

@@ -1,0 +1,103 @@
+{{ block title }}Welcome to the Study{{ endblock }}
+
+{{ block content }}
+<style>
+  .shb-card {
+    border: 1px solid #dee2e6;
+    border-radius: 8px;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    background: #fff;
+  }
+  .shb-header {
+    background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .shb-header h2 { color: white; margin-bottom: 0.25rem; }
+  .shb-header p  { color: #d0e8f7; margin-bottom: 0; }
+  .pay-box {
+    background: #e8f5e9;
+    border-left: 4px solid #2e7d32;
+    padding: 1rem 1.5rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+  }
+  .consent-text {
+    font-size: 0.92rem;
+    color: #555;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 1rem;
+    background: #f9f9f9;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+  .btn-start {
+    background: #2c3e50;
+    color: white;
+    font-size: 1.1rem;
+    padding: 0.75rem 2.5rem;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+  }
+  .btn-start:hover { background: #3498db; }
+</style>
+
+<div class="shb-header">
+  <h2>Skill Development and Labor Markets Study</h2>
+  <p>A research study on workplace skill investment decisions</p>
+</div>
+
+<div class="shb-card">
+  <h4>What You Will Do</h4>
+  <ul>
+    <li>Complete <strong>{{ num_rounds }} rounds</strong> of a short performance task</li>
+    <li>Before each round, decide how much to invest in <strong>training</strong></li>
+    <li>Earn money based on your performance and investment decisions</li>
+    <li>Answer a brief exit survey (~5 minutes)</li>
+  </ul>
+  <p><strong>Estimated total time:</strong> 35–45 minutes</p>
+</div>
+
+<div class="shb-card">
+  <h4>Payment</h4>
+  <div class="pay-box">
+    <strong>Base payment:</strong> ${{ participation_fee_usd }}.00 (for completing the study)<br>
+    <strong>Performance bonus:</strong> earned ECU ÷ {{ ecu_per_usd }} = dollars<br>
+    <strong>Expected total:</strong> $7–$12 (depending on performance)
+  </div>
+  <p class="text-muted" style="font-size:0.88rem;">
+    ECU = Experimental Currency Units. All bonuses paid through Prolific within 24 hours of completion.
+  </p>
+</div>
+
+<div class="shb-card">
+  <h4>Informed Consent</h4>
+  <div class="consent-text">
+    <p><strong>Study Purpose:</strong> This study examines how workers make decisions about skill development and investment in their human capital under different labor market conditions.</p>
+    <p><strong>Procedures:</strong> You will complete a real-effort task (counting numbers in grids) and make investment decisions over 3 rounds. Your earnings depend on your performance and choices.</p>
+    <p><strong>No deception:</strong> This study does not use deception. The wage formula you face will be fully explained before the task begins and shown to you throughout.</p>
+    <p><strong>Voluntary participation:</strong> Your participation is entirely voluntary. You may exit at any time and will be paid for the rounds you completed.</p>
+    <p><strong>Data privacy:</strong> Your data will be stored securely and anonymized before analysis. Only your Prolific ID is collected; no other personally identifying information is retained.</p>
+    <p><strong>Risks:</strong> There are no known risks beyond those of normal computer use.</p>
+    <p><strong>Contact:</strong> If you have questions about this study, please contact the research team through Prolific.</p>
+  </div>
+  <p class="mt-3">By clicking the button below, you confirm that you:</p>
+  <ul>
+    <li>Are at least 18 years old</li>
+    <li>Are currently employed for pay (full-time or part-time)</li>
+    <li>Have read and understood the information above</li>
+    <li>Consent to participate in this study</li>
+  </ul>
+</div>
+
+<div class="text-center mt-3">
+  {{ next_button }}
+</div>
+
+{{ endblock }}
