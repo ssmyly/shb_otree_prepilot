@@ -226,10 +226,8 @@ def creating_session(subsession: Subsession):
     """
     if subsession.round_number == 1:
         players = subsession.get_players()
-        n = len(players)
-        conditions = (['shb'] * (n // 2) + ['no_shb'] * (n - n // 2))
-        random.shuffle(conditions)
-        for player, cond in zip(players, conditions):
+        for player in players:
+            cond = random.choice(['shb', 'no_shb'])
             player.participant.vars['condition'] = cond
             player.condition = cond
     else:
